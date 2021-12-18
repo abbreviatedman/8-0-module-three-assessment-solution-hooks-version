@@ -1,47 +1,37 @@
-import { Component } from "react";
+import { useEffect, useState } from "react";
 
-class Movies extends Component {
-  constructor() {
-    super();
-    this.state = {
-      movies: [],
-      currentMovie: null,
-    };
-  }
+const Movies = () => {
+  const [movies, setMovies] = useState([]);
+  const [movie, setMovie] = useState(null);
 
-  componentDidMount() {
+  useEffect(() => {
     fetch("https://ghibliapi.herokuapp.com/films")
       .then((response) => response.json())
-      .then((movies) => this.setState({ movies }));
-  }
+      .then((movies) => setMovies(movies));
+  }, []);
 
-  switchMovies = (event) => {
-    const currentMovie = this.state.movies.find(
-      (movie) => movie.title === event.target.value
-    );
+  const switchMovies = (event) => {
+    const movie = movies.find((movie) => movie.title === event.target.value);
 
-    this.setState({ currentMovie });
+    setMovie(movie);
   };
 
-  render() {
-    const { movies, currentMovie } = this.state;
-    const movieOptions = movies.map((movie) => {
-      return <option value={movie.title}>{movie.title}</option>;
-    });
+  const movieOptions = movies.map((movie) => {
+    return <option value={movie.title}>{movie.title}</option>;
+  });
 
-    return (
-      <div className="movies">
-        <p>Select a Movie</p>
-        <select id="movies" name="movies" onChange={this.switchMovies}>
-          <option value="">Select A Movie</option>
-          {movieOptions}
-        </select>
-        <h1>{currentMovie && currentMovie.title}</h1>
-        <p>{currentMovie && currentMovie.description}</p>
-        <p>{currentMovie && currentMovie.release_date}</p>
-      </div>
-    );
-  }
-}
+  return (
+    <div className="movies">
+      <p>Select a Movie</p>
+      <select id="movies" name="movies" onChange={switchMovies}>
+        <option value="">Select A Movie</option>
+        {movieOptions}
+      </select>
+      <h1>{movie && movie.title}</h1>
+      <p>{movie && movie.description}</p>
+      <p>{movie && movie.release_date}</p>
+    </div>
+  );
+};
 
 export default Movies;
